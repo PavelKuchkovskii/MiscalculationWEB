@@ -11,7 +11,7 @@ public class UserDTO {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;
-    private String mail;
+    private String email;
     private String name;
     private String surname;
     private String password;
@@ -21,11 +21,11 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(UUID uuid, LocalDateTime dtCreate, LocalDateTime dtUpdate, String mail, String name, String surname, String password, EUserRole role, EUserStatus status) {
+    public UserDTO(UUID uuid, LocalDateTime dtCreate, LocalDateTime dtUpdate, String email, String name, String surname, String password, EUserRole role, EUserStatus status) {
         this.uuid = uuid;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
-        this.mail = mail;
+        this.email = email;
         this.name = name;
         this.surname = surname;
         this.password = password;
@@ -57,12 +57,12 @@ public class UserDTO {
         this.dtUpdate = dtUpdate;
     }
 
-    public String getMail() {
-        return mail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

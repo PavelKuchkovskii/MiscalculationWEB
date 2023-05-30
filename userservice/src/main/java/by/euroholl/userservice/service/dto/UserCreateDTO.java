@@ -6,18 +6,18 @@ import org.hibernate.validator.constraints.NotBlank;
 public class UserCreateDTO {
 
     @Email(message = "Mail must be valid")
-    private String mail;
+    private String email;
     @NotBlank(message = "Name cannot be blank")
     private String name;
     @NotBlank(message = "Surname cannot be blank")
     private String surname;
     private String password;
-    public String getMail() {
-        return mail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

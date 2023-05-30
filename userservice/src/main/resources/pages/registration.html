@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Регистрация</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#registration-form').submit(function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем значения полей формы
+        var email = $('#email').val();
+        var name = $('#name').val();
+        var surname = $('#surname').val();
+        var password = $('#password').val();
+
+        // Создаем объект с данными пользователя
+        var userData = {
+          email: email,
+          name: name,
+          surname: surname,
+          password: password
+        };
+
+        // Отключаем активность формы
+        $('#registration-form input, #registration-form button').prop('disabled', true);
+
+        // Отправляем данные в формате JSON на сервер
+        $.ajax({
+          type: 'POST',
+          url: 'http://localhost:8080/users/registration',
+          data: JSON.stringify(userData),
+          contentType: 'application/json',
+          success: function(response) {
+            // Обработка успешного ответа от сервера
+            console.log('Регистрация прошла успешно!', response);
+            showNotification('Регистрация прошла успешно!', JSON.stringify(response), function() {
+              // После скрытия уведомления восстанавливаем активность формы
+              $('#registration-form input, #registration-form button').prop('disabled', false);
+            });
+          },
+          error: function(xhr, status, error) {
+            // Обработка ошибки
+            console.error('Произошла ошибка при регистрации:', error);
+            showNotification('Ошибка при регистрации', xhr.responseText, function() {
+              // После скрытия уведомления восстанавливаем активность формы
+              $('#registration-form input, #registration-form button').prop('disabled', false);
+            });
+          }
+        });
+      });
+
+      function showNotification(title, message, callback) {
+        var notification = $('<div>', {
+          class: 'notification',
+        });
+
+        var titleContainer = $('<div>', {
+          class: 'title',
+          text: title
+        });
+
+        var messageContainer = $('<div>', {
+          class: 'message',
+          text: message
+        });
+
+        var closeButton = $('<button>', {
+          class: 'close-button',
+          text: 'OK'
+        });
+
+        closeButton.on('click', function() {
+          notification.fadeOut('slow', function() {
+            $(this).remove();
+            if (callback) {
+              callback();
+            }
+          });
+        });
+
+        notification.append(titleContainer, messageContainer, closeButton);
+        $('body').append(notification);
+      }
+    });
+  </script>
+  <style>
+    body {
+      background-color: #f2f2f7;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    #registration-form {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input[type="email"],
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    input[type="submit"] {
+      background-color: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #007aff;
+      color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      margin-bottom: 10px;
+    }
+
+    .close-button {
+      background-color: #fff;
+      color: #007aff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Регистрация</h1>
+  <form id="registration-form">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+
+    <label for="name">Имя:</label>
+    <input type="text" id="name" required>
+
+    <label for="surname">Фамилия:</label>
+    <input type="text" id="surname" required>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" required>
+
+    <input type="submit" value="РЕГИСТРАЦИЯ">
+  </form>
+</body>
+</html>

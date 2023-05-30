@@ -37,6 +37,7 @@ public class UserController {
     }*/
 
     @PostMapping("/registration")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<RegistrationMessage> doPost(@Valid @RequestBody UserCreateDTO dto) {
 
         service.create(dto);

@@ -35,7 +35,7 @@ public class UserService {
         userDTO.setUuid(UUID.randomUUID());
         userDTO.setDtCreate(LocalDateTime.now());
         userDTO.setDtUpdate(userDTO.getDtCreate());
-        userDTO.setMail(dto.getMail());
+        userDTO.setEmail(dto.getEmail());
         userDTO.setName(dto.getName());
         userDTO.setSurname(dto.getSurname());
         userDTO.setPassword(encoder.encode(dto.getPassword()));
@@ -99,7 +99,7 @@ public class UserService {
                 .setUuid(userDTO.getUuid())
                 .setDtCreate(userDTO.getDtCreate())
                 .setDtUpdate(userDTO.getDtUpdate())
-                .setMail(userDTO.getMail())
+                .setMail(userDTO.getEmail())
                 .setName(userDTO.getName())
                 .setSurname(userDTO.getSurname())
                 .setPassword(userDTO.getPassword())
