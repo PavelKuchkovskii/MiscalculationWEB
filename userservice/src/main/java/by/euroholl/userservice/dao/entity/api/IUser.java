@@ -5,7 +5,7 @@ import by.euroholl.userservice.dao.entity.enums.EUserStatus;
 
 public interface IUser extends IEssence {
 
-    String getMail();
+    String getEmail();
     String getName();
     String getSurname();
     String getPassword();

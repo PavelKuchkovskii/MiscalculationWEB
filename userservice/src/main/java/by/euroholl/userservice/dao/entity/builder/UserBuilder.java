@@ -12,7 +12,7 @@ public class UserBuilder {
     private UUID uuid;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;
-    private String mail;
+    private String email;
     private String name;
     private String surname;
     private String password;
@@ -42,8 +42,8 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setMail(String mail) {
-        this.mail = mail;
+    public UserBuilder setEmail(String email) {
+        this.email = email;
         return this;
     }
 
@@ -73,6 +73,6 @@ public class UserBuilder {
     }
 
     public User build () {
-        return new User(uuid, dtCreate, dtUpdate, mail, name, surname, password, role, status);
+        return new User(uuid, dtCreate, dtUpdate, email, name, surname, password, role, status);
     }
 }

@@ -1,6 +1,6 @@
 package by.euroholl.userservice.controller;
 
-import by.euroholl.userservice.controller.api.RegistrationMessage;
+import by.euroholl.userservice.controller.api.Message;
 import by.euroholl.userservice.service.UserService;
 import by.euroholl.userservice.service.dto.UserCreateDTO;
 import org.springframework.http.HttpStatus;
@@ -38,11 +38,11 @@ public class UserController {
 
     @PostMapping("/registration")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<RegistrationMessage> doPost(@Valid @RequestBody UserCreateDTO dto) {
+    public ResponseEntity<Message> doPost(@Valid @RequestBody UserCreateDTO dto) {
 
         service.create(dto);
 
-        RegistrationMessage message = new RegistrationMessage("info", "To complete registration, please follow the link sent to your email");
+        Message message = new Message("info", "To complete registration, please follow the link sent to your email");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

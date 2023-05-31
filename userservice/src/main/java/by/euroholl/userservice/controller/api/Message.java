@@ -1,11 +1,11 @@
 package by.euroholl.userservice.controller.api;
 
-public class RegistrationMessage {
+public class Message {
 
     private String logref;
     private String message;
 
-    public RegistrationMessage(String logref, String message) {
+    public Message(String logref, String message) {
         this.logref = logref;
         this.message = message;
     }

@@ -99,7 +99,7 @@ public class UserService {
                 .setUuid(userDTO.getUuid())
                 .setDtCreate(userDTO.getDtCreate())
                 .setDtUpdate(userDTO.getDtUpdate())
-                .setMail(userDTO.getEmail())
+                .setEmail(userDTO.getEmail())
                 .setName(userDTO.getName())
                 .setSurname(userDTO.getSurname())
                 .setPassword(userDTO.getPassword())

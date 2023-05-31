@@ -17,8 +17,8 @@ public class User implements IUser {
     private LocalDateTime dtCreate;
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
-    @Column(name = "mail")
-    private String mail;
+    @Column(name = "email")
+    private String email;
     @Column(name = "name")
     private String name;
     @Column(name = "surname")
@@ -39,7 +39,7 @@ public class User implements IUser {
         this.uuid = uuid;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
-        this.mail = mail;
+        this.email = mail;
         this.name = name;
         this.surname = surname;
         this.password = password;
@@ -62,9 +62,8 @@ public class User implements IUser {
         return this.dtUpdate;
     }
 
-    @Override
-    public String getMail() {
-        return this.mail;
+    public String getEmail() {
+        return this.email;
     }
 
     @Override

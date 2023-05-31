@@ -1,35 +1,54 @@
 package by.euroholl.userservice.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import by.euroholl.userservice.controller.api.Message;
+import by.euroholl.userservice.service.dto.UserLoginDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
 public class AuthController {
 
-    /*private final AuthService service;
-    private final PasswordEncoder encoder;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(AuthService service, PasswordEncoder encoder) {
-        this.service = service;
-        this.encoder = encoder;
+    public AuthController(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> doPost(@Valid @RequestBody UserLoginDTO dto) throws JsonProcessingException {
+    public ResponseEntity<Message> doPost(@Valid @RequestBody UserLoginDTO dto) {
 
-        UserDTO user = this.service.loadByMail(dto.getMail());
+        // Создание аутентификационного объекта
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                dto.getEmail(), dto.getPassword());
 
-        if(!encoder.matches(dto.getPassword(), user.getPassword())){
-            throw new BadCredentialsException("Bad credentials");
-        }
+        // Аутентификация
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        if(!user.getStatus().equals(EUserStatus.ACTIVATED)) {
-            throw new UserNotActivatedException("User not activated");
-        }
+        // Установка аутентификации в контексте безопасности
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new ResponseEntity<>(JwtTokenUtil.generateAccessToken(user), HttpStatus.OK);
-    }*/
+        Message message = new Message("info", "This is JWT Token");
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/row")
+    public ResponseEntity<Message> doGet() {
+
+        Message message = new Message("info", "попали");
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
 
 
 }
