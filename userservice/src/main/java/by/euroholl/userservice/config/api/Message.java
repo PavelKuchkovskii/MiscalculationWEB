@@ -1,4 +1,4 @@
-package by.euroholl.userservice.controller.api;
+package by.euroholl.userservice.config.api;
 
 public class Message {
 

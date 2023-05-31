@@ -1,8 +1,10 @@
 package by.euroholl.userservice.security.config;
 
+import by.euroholl.userservice.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,8 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
     private final PasswordEncoder encoder;
+    private final AuthService service;
 
     @Bean
     @Override
@@ -23,14 +25,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder encoder) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(AuthService service, PasswordEncoder encoder) {
         this.encoder = encoder;
+        this.service = service;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(encoder);
+        auth.userDetailsService(service).passwordEncoder(encoder);
     }
 
     @Override

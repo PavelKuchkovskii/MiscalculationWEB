@@ -1,6 +1,6 @@
 package by.euroholl.userservice.controller;
 
-import by.euroholl.userservice.controller.api.Message;
+import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.service.UserService;
 import by.euroholl.userservice.service.dto.UserCreateDTO;
 import org.springframework.http.HttpStatus;

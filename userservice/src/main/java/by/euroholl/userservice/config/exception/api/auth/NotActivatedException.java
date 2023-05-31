@@ -1,6 +1,9 @@
 package by.euroholl.userservice.config.exception.api.auth;
 
-public class NotActivatedException extends RuntimeException{
+
+import org.springframework.security.core.AuthenticationException;
+
+public class NotActivatedException extends AuthenticationException {
 
     public NotActivatedException(String message) {
         super(message);
