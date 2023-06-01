@@ -1,5 +1,6 @@
 package by.euroholl.userservice.service;
 
+import by.euroholl.userservice.config.exception.api.registration.UserAlreadyExistsException;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
 import by.euroholl.userservice.dao.entity.builder.UserBuilder;
@@ -31,6 +32,11 @@ public class UserService {
     }
     @Transactional
     public UserDTO create(UserCreateDTO dto) {
+
+        if(read(dto.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User already exist");
+        }
+
         UserDTO userDTO = new UserDTO();
         userDTO.setUuid(UUID.randomUUID());
         userDTO.setDtCreate(LocalDateTime.now());
@@ -40,7 +46,7 @@ public class UserService {
         userDTO.setSurname(dto.getSurname());
         userDTO.setPassword(encoder.encode(dto.getPassword()));
         userDTO.setRole(EUserRole.ROLE_USER);
-        userDTO.setStatus(EUserStatus.WAITING_ACTIVATION);
+        userDTO.setStatus(EUserStatus.ACTIVATED);
 
         if(validate(userDTO)) {
             User user = mapToEntity(userDTO);
@@ -50,16 +56,6 @@ public class UserService {
         return this.read(userDTO.getUuid());
     }
 
-    /*public UserDTO get(Authentication auth) {
-        Optional<User> user = dao.findByNick( ((UserToJwt) auth.getPrincipal()).getNick());
-
-        if(user.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        return this.mapToDTO(user.get());
-    }*/
-
     public UserDTO read(UUID uuid) {
         Optional<User> user = dao.findById(uuid);
 
@@ -68,6 +64,12 @@ public class UserService {
         }
 
         return this.mapToDTO(user.get());
+    }
+
+    public Optional<User> read(String email) {
+        Optional<User> user = dao.findByEmail(email);
+
+        return user;
     }
 
     public boolean validate(UserDTO dto) {

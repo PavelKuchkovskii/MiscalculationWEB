@@ -17,7 +17,7 @@ public class User implements IUser {
     private LocalDateTime dtCreate;
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "name")
     private String name;
