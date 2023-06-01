@@ -39,7 +39,7 @@ public class UserService {
         userDTO.setName(dto.getName());
         userDTO.setSurname(dto.getSurname());
         userDTO.setPassword(encoder.encode(dto.getPassword()));
-        userDTO.setRole(EUserRole.USER);
+        userDTO.setRole(EUserRole.ROLE_USER);
         userDTO.setStatus(EUserStatus.WAITING_ACTIVATION);
 
         if(validate(userDTO)) {

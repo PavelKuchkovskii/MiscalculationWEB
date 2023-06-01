@@ -1,12 +1,10 @@
 package by.euroholl.userservice.service;
 
-import by.euroholl.userservice.config.exception.api.auth.EmailNotConfirmException;
-import by.euroholl.userservice.config.exception.api.auth.NotActivatedException;
-import by.euroholl.userservice.config.exception.api.auth.UserDeactivatedException;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
-import by.euroholl.userservice.dao.entity.enums.EUserStatus;
+import by.euroholl.userservice.security.auth.CustomUserDetails;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,31 +24,17 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = dao.findByEmail(username);
-        if (user.isEmpty()) {
+        Optional<User> oUser = dao.findByEmail(username);
+        if (oUser.isEmpty()) {
             throw new BadCredentialsException("Bad credentials");
         }
 
-        //Validate user for status
-        //validate(user.get());
+        User user = oUser.get();
 
-        return new org.springframework.security.core.userdetails.User(
-                user.get().getEmail(),
-                user.get().getPassword(),
-                Collections.emptyList()
-        );
-    }
+        return new CustomUserDetails(user.getStatus(),
+                                    Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())),
+                                    user.getPassword(),
+                                    user.getEmail());
 
-    //Куда ее запихнуть?????
-    public void validate(User user) {
-        if(user.getStatus() == EUserStatus.WAITING_VERIFICATION || user.getStatus() == EUserStatus.WAITING_CONFIRM) {
-            throw new EmailNotConfirmException("Check you email and tap to link to confirm registration");
-        }
-        else if(user.getStatus() == EUserStatus.WAITING_ACTIVATION) {
-            throw new NotActivatedException("Your account has not been activated. Contact the administrator");
-        }
-        else if(user.getStatus() == EUserStatus.DEACTIVATED) {
-            throw new UserDeactivatedException("Your account has been deactivated. Contact the administrator");
-        }
     }
  }
