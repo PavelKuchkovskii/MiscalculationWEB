@@ -2,6 +2,8 @@ package by.euroholl.userservice.controller;
 
 import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.service.dto.UserLoginDTO;
+import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
+import com.google.cloud.secretmanager.v1.SecretPayload;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,9 +19,11 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final SecretManagerServiceClient secretManagerServiceClient;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, SecretManagerServiceClient secretManagerServiceClient) {
         this.authenticationManager = authenticationManager;
+        this.secretManagerServiceClient = secretManagerServiceClient;
     }
 
     @PostMapping("/login")
@@ -35,7 +39,10 @@ public class AuthController {
         // Установка аутентификации в контексте безопасности
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Message message = new Message("info", "This is JWT Token");
+        //В этом месте нужно сгенерировать токен для пользователя
+        String token = "This is JWT Token";
+
+        Message message = new Message("info", token);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -43,7 +50,10 @@ public class AuthController {
     @GetMapping("/row")
     public ResponseEntity<Message> doGet() {
 
-        Message message = new Message("info", "попали");
+
+        SecretPayload payload = secretManagerServiceClient.accessSecretVersion("projects/333503614145/secrets/JWT_SECRET/versions/latest").getPayload();
+
+        Message message = new Message("info", payload.getData().toStringUtf8());
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
