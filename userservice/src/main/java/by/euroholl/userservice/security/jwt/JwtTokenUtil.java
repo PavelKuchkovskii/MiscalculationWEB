@@ -1,74 +1,89 @@
 package by.euroholl.userservice.security.jwt;
 
-import by.euroholl.userservice.service.dto.UserDTO;
+import by.euroholl.userservice.security.jwt.dto.UserJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
+import com.google.cloud.secretmanager.v1.SecretPayload;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class JwtTokenUtil {
 
+    private static String jwtIssuer;
+    private static String secretVersion;
+    private static SecretManagerServiceClient secretManagerServiceClient;
 
-    private static final String jwtIssuer;
-    private static final ObjectMapper mapper;
-
-    static {
-        jwtIssuer = "EuroHoll";
-        mapper = new ObjectMapper();
+    @Value("${jwt.issuer}")
+    public void setJwtIssuer(String jwtIssuer) {
+        JwtTokenUtil.jwtIssuer = jwtIssuer;
+    }
+    @Value("${gcp.secret}")
+    public void setSecretVersion(String secretVersion) {
+        JwtTokenUtil.secretVersion = secretVersion;
+    }
+    @Autowired
+    public void setSecretManagerServiceClient(SecretManagerServiceClient secretManagerServiceClient) {
+        JwtTokenUtil.secretManagerServiceClient = secretManagerServiceClient;
     }
 
-    public static String generateAccessToken(UserDTO user) {
-        String jwtSecret = "NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw";
+    private static String getSecret() {
+        SecretPayload payload = secretManagerServiceClient.accessSecretVersion(secretVersion).getPayload();
+        return payload.getData().toStringUtf8();
+    }
 
-        Map<String, Object> map = new HashMap<>();
+    public static String generateAccessToken(Authentication auth) {
+        String jwtSecret = getSecret();
 
-        UserToJwt userToJwt = new UserToJwt(user.getUuid(),
-                user.getMail(),
-                user.getRole(;
-        try {
-            map.put("user", mapper.writeValueAsString(userToJwt));
-        } catch (JsonProcessingException e) {
-            throw new JwtTokenGenerationException();
-        }
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + TimeUnit.DAYS.toMillis(1));
 
+        Claims claims = Jwts.claims().setSubject(auth.getName());
+        claims.put("roles", auth.getAuthorities());
 
         return Jwts.builder()
-                .setClaims(map)
+                .setClaims(claims)
                 .setIssuer(jwtIssuer)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7))) // 1 week
+                .setIssuedAt(now)
+                .setExpiration(validity) // 1 week
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public static UserToJwt getUser(String token) throws JsonProcessingException {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
-        return mapper.readValue(claims.get("user").toString(), UserToJwt.class);
+    public static UserJWT getUser(String token) throws JsonProcessingException {
+        String jwtSecret = getSecret();
+
+        Claims claims = validate(token, jwtSecret);
+
+        return new UserJWT(claims.getSubject(), (List<GrantedAuthority>) claims.get("roles"));
     }
 
-    public static Date getExpirationDate(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getExpiration();
-    }
-
-    public static boolean validate(String token) {
+    public static Claims validate(String token, String secret) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return true;
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+
+           /* Date expiration = claims.getExpiration();
+            if(expiration.before(new Date())) {
+
+                //need my exception
+                throw new RuntimeException("Date off");
+            }*/
+
+            return claims;
+
         } catch (SignatureException | IllegalArgumentException | UnsupportedJwtException | ExpiredJwtException |
                  MalformedJwtException ex) {
-            return false;
+
+            //need my exception
+           throw new RuntimeException("Invalid token");
         }
     }
 }
