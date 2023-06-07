@@ -1,6 +1,9 @@
 package by.euroholl.userservice.security.jwt.filter;
 
+import by.euroholl.userservice.security.jwt.JwtTokenUtil;
+import by.euroholl.userservice.security.jwt.dto.UserJWT;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (isEmpty(header) || !header.startsWith("Bearer ")) {
+        if (!header.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
@@ -30,13 +33,9 @@ public class JwtFilter extends OncePerRequestFilter {
         // Get jwt token and validate
         final String token = header.split(" ")[1].trim();
 
-        if (!JwtTokenUtil.validate(token)) {
-            chain.doFilter(request, response);
-            return;
-        }
 
         // Get user identity and set it on the spring security context
-        UserToJwt user = JwtTokenUtil.getUser(token);
+        UserJWT user = JwtTokenUtil.getUser(token);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 user, null,

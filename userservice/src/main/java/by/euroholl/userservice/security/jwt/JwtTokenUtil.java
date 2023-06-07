@@ -66,7 +66,7 @@ public class JwtTokenUtil {
         return new UserJWT(claims.getSubject(), (List<GrantedAuthority>) claims.get("roles"));
     }
 
-    public static Claims validate(String token, String secret) {
+    private static Claims validate(String token, String secret) {
         try {
             Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
