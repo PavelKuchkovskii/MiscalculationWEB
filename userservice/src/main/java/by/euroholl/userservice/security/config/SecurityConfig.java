@@ -21,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
+    private final JwtFilter filter;
 
 
     @Bean
@@ -37,9 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationProvider;
     }
 
-    public SecurityConfig(AuthService authService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(AuthService authService, PasswordEncoder passwordEncoder, JwtFilter filter) {
         this.passwordEncoder = passwordEncoder;
         this.authService = authService;
+        this.filter = filter;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/registration").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

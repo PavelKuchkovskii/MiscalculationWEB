@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({AuthenticationException.class, RegistrationException.class, CustomJwtTokenException.class})
+    @ExceptionHandler({AuthenticationException.class, RegistrationException.class})
     public ResponseEntity<Object> handleAuthException(RuntimeException ex) {
         Message error = new Message("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
