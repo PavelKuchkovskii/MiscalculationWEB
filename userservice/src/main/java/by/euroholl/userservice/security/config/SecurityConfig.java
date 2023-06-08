@@ -1,6 +1,7 @@
 package by.euroholl.userservice.security.config;
 
 import by.euroholl.userservice.security.auth.CustomDaoAuthenticationProvider;
+import by.euroholl.userservice.security.jwt.filter.JwtFilter;
 import by.euroholl.userservice.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
+
 
     @Bean
     @Override
@@ -46,19 +49,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        /*http
+        http
              .sessionManagement()
              .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
              .and();
-*/
+
         http
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers("/users/login").permitAll()
                 .antMatchers("/users/registration").permitAll()
                 .anyRequest().authenticated()
-//                .anyRequest().permitAll()
-                .and();
+                .and()
+                .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
 }

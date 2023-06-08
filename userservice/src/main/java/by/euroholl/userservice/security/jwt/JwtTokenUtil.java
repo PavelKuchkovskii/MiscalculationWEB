@@ -1,19 +1,23 @@
 package by.euroholl.userservice.security.jwt;
 
-import by.euroholl.userservice.security.jwt.dto.UserJWT;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import by.euroholl.userservice.security.jwt.exception.ExpiredJwtTokenException;
+import by.euroholl.userservice.security.jwt.exception.InvalidJwtTokenException;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretPayload;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtil {
@@ -47,7 +51,7 @@ public class JwtTokenUtil {
         Date validity = new Date(now.getTime() + TimeUnit.DAYS.toMillis(1));
 
         Claims claims = Jwts.claims().setSubject(auth.getName());
-        claims.put("roles", auth.getAuthorities());
+        claims.put("authorities", auth.getAuthorities());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -58,32 +62,37 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public static UserJWT getUser(String token) throws JsonProcessingException {
+    public static Authentication getAuthentication(String token) {
         String jwtSecret = getSecret();
 
         Claims claims = validate(token, jwtSecret);
 
-        return new UserJWT(claims.getSubject(), (List<GrantedAuthority>) claims.get("roles"));
+        String username = claims.getSubject();
+
+        //Из JWT из поля authority, достается ArrayList<LinkedHashMap<String, String>>
+        //Его приеобразовываем в список List<GrantedAuthority>
+        List<GrantedAuthority> authorities = ((List<?>) claims.get("authorities"))
+                .stream()
+                .map(authority -> new SimpleGrantedAuthority(((HashMap<String, String>) authority).get("authority")))
+                .collect(Collectors.toList());
+
+        UserDetails userDetails = new User(username, "password", authorities);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
     private static Claims validate(String token, String secret) {
+
+        //Эти ошибки не попадают в GlobalExceptionHandler
         try {
-            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-           /* Date expiration = claims.getExpiration();
-            if(expiration.before(new Date())) {
-
-                //need my exception
-                throw new RuntimeException("Date off");
-            }*/
-
-            return claims;
-
-        } catch (SignatureException | IllegalArgumentException | UnsupportedJwtException | ExpiredJwtException |
-                 MalformedJwtException ex) {
-
-            //need my exception
-           throw new RuntimeException("Invalid token");
+        }
+        catch (SignatureException | IllegalArgumentException | UnsupportedJwtException | MalformedJwtException ex) {
+           throw new InvalidJwtTokenException("Invalid token");
+        }
+        catch (ExpiredJwtException ex) {
+            throw new ExpiredJwtTokenException("Token Expired");
         }
     }
 }
