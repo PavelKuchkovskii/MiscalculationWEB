@@ -83,13 +83,11 @@ public class JwtTokenUtil {
 
     private static Claims validate(String token, String secret) {
 
-        //Эти ошибки не попадают в GlobalExceptionHandler
         try {
             return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-
         }
         catch (SignatureException | IllegalArgumentException | UnsupportedJwtException | MalformedJwtException ex) {
-           throw new InvalidJwtTokenException("Invalid token");
+            throw new InvalidJwtTokenException("Invalid token");
         }
         catch (ExpiredJwtException ex) {
             throw new ExpiredJwtTokenException("Token Expired");

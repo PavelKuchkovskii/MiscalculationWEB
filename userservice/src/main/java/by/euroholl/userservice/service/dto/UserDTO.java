@@ -2,6 +2,7 @@ package by.euroholl.userservice.service.dto;
 
 import by.euroholl.userservice.dao.entity.enums.EUserRole;
 import by.euroholl.userservice.dao.entity.enums.EUserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,6 +15,7 @@ public class UserDTO {
     private String email;
     private String name;
     private String surname;
+    @JsonIgnore
     private String password;
     private EUserRole role;
     private EUserStatus status;

@@ -6,6 +6,7 @@ import by.euroholl.userservice.dao.entity.User;
 import by.euroholl.userservice.dao.entity.builder.UserBuilder;
 import by.euroholl.userservice.dao.entity.enums.EUserRole;
 import by.euroholl.userservice.dao.entity.enums.EUserStatus;
+import by.euroholl.userservice.service.dto.UserCreateByAdminDTO;
 import by.euroholl.userservice.service.dto.UserCreateDTO;
 import by.euroholl.userservice.service.dto.UserDTO;
 import org.modelmapper.ModelMapper;
@@ -45,8 +46,34 @@ public class UserService {
         userDTO.setName(dto.getName());
         userDTO.setSurname(dto.getSurname());
         userDTO.setPassword(encoder.encode(dto.getPassword()));
-        userDTO.setRole(EUserRole.ROLE_USER);
+        userDTO.setRole(EUserRole.ROLE_ADMIN);
         userDTO.setStatus(EUserStatus.ACTIVATED);
+
+        if(validate(userDTO)) {
+            User user = mapToEntity(userDTO);
+            dao.save(user);
+        }
+
+        return this.read(userDTO.getUuid());
+    }
+
+    @Transactional
+    public UserDTO create(UserCreateByAdminDTO dto) {
+
+        if(read(dto.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User already exist");
+        }
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUuid(UUID.randomUUID());
+        userDTO.setDtCreate(LocalDateTime.now());
+        userDTO.setDtUpdate(userDTO.getDtCreate());
+        userDTO.setEmail(dto.getEmail());
+        userDTO.setName(dto.getName());
+        userDTO.setSurname(dto.getSurname());
+        userDTO.setPassword(encoder.encode(dto.getPassword()));
+        userDTO.setRole(dto.getRole());
+        userDTO.setStatus(dto.getStatus());
 
         if(validate(userDTO)) {
             User user = mapToEntity(userDTO);
