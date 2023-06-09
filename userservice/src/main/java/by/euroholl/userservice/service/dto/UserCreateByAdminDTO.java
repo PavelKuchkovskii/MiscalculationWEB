@@ -1,8 +1,5 @@
 package by.euroholl.userservice.service.dto;
 
-import by.euroholl.userservice.dao.entity.enums.EUserRole;
-import by.euroholl.userservice.dao.entity.enums.EUserStatus;
-
 import javax.validation.constraints.*;
 
 public class UserCreateByAdminDTO {
@@ -13,10 +10,10 @@ public class UserCreateByAdminDTO {
     @NotBlank(message = "Surname cannot be blank")
     private String surname;
     private String password;
-    @NotNull(message = "Invalid role")
-    private EUserRole role;
-    @NotNull(message = "Invalid status")
-    private EUserStatus status;
+    @NotBlank(message = "Invalid blank")
+    private String role;
+    @NotBlank(message = "Invalid blank")
+    private String status;
 
     public UserCreateByAdminDTO() {
     }
@@ -53,19 +50,19 @@ public class UserCreateByAdminDTO {
         this.password = password;
     }
 
-    public EUserRole getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(EUserRole role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
-    public EUserStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(EUserStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

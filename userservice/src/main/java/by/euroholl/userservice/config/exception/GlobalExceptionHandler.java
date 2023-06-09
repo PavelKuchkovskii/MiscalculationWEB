@@ -4,10 +4,11 @@ package by.euroholl.userservice.config.exception;
 import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.config.api.MultipleMessage;
 import by.euroholl.userservice.config.exception.api.registration.api.RegistrationException;
-import org.springframework.boot.json.JsonParseException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,7 +24,7 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({AuthenticationException.class, RegistrationException.class, JsonParseException.class})
+    @ExceptionHandler({AuthenticationException.class, RegistrationException.class, MismatchedInputException.class})
     public ResponseEntity<Object> handleAuthException(RuntimeException ex) {
         Message error = new Message("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
@@ -42,4 +43,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Message error = new Message("error", ex.getMessage());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
