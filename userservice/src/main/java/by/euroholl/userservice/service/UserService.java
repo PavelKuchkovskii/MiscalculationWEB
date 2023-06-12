@@ -72,8 +72,8 @@ public class UserService {
         userDTO.setName(dto.getName());
         userDTO.setSurname(dto.getSurname());
         userDTO.setPassword(encoder.encode(dto.getPassword()));
-        userDTO.setRole(dto.getRole());
-        userDTO.setStatus(dto.getStatus());
+        userDTO.setRole(EUserRole.get(dto.getRole()));
+        userDTO.setStatus(EUserStatus.get(dto.getStatus()));
 
         if(validate(userDTO)) {
             User user = mapToEntity(userDTO);

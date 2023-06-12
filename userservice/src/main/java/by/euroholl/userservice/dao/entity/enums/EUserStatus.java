@@ -15,5 +15,14 @@ public enum EUserStatus {
     ACTIVATED,
 
     //DEACTIVATED
-    DEACTIVATED
+    DEACTIVATED;
+
+    public static EUserStatus get(String name) {
+
+        try {
+            return EUserStatus.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid status");
+        }
+    }
 }
