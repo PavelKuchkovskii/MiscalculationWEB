@@ -1,12 +1,13 @@
 package by.euroholl.userservice.service;
 
-import by.euroholl.userservice.config.exception.api.registration.UserAlreadyExistsException;
+import by.euroholl.userservice.config.exception.api.crud.UserAlreadyExistsException;
+import by.euroholl.userservice.config.exception.api.crud.UserAlreadyUpdatedException;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
 import by.euroholl.userservice.dao.entity.builder.UserBuilder;
 import by.euroholl.userservice.dao.entity.enums.EUserRole;
 import by.euroholl.userservice.dao.entity.enums.EUserStatus;
-import by.euroholl.userservice.service.dto.UserCreateByAdminDTO;
+import by.euroholl.userservice.service.dto.UserByAdminDTO;
 import by.euroholl.userservice.service.dto.UserCreateDTO;
 import by.euroholl.userservice.service.dto.UserDTO;
 import org.modelmapper.ModelMapper;
@@ -34,7 +35,7 @@ public class UserService {
     @Transactional
     public UserDTO create(UserCreateDTO dto) {
 
-        if(read(dto.getEmail()).isPresent()) {
+        if(dao.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("User already exist");
         }
 
@@ -58,9 +59,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO create(UserCreateByAdminDTO dto) {
+    public UserDTO create(UserByAdminDTO dto) {
 
-        if(read(dto.getEmail()).isPresent()) {
+        if(dao.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("User already exist");
         }
 
@@ -83,21 +84,43 @@ public class UserService {
         return this.read(userDTO.getUuid());
     }
 
+    @Transactional
+    public UserDTO update(UUID uuid, LocalDateTime dtUpdate, UserByAdminDTO dto) {
+
+        UserDTO userDTO = read(uuid);
+
+        if(dtUpdate.isEqual(userDTO.getDtUpdate())) {
+            userDTO.setDtUpdate(LocalDateTime.now());
+            userDTO.setEmail(dto.getEmail());
+            userDTO.setName(dto.getName());
+            userDTO.setSurname(dto.getSurname());
+            userDTO.setPassword(encoder.encode(dto.getPassword()));
+            userDTO.setRole(EUserRole.get(dto.getRole()));
+            userDTO.setStatus(EUserStatus.get(dto.getStatus()));
+
+            if (validate(userDTO)) {
+                User user = mapToEntity(userDTO);
+                dao.save(user);
+            }
+
+            return this.read(userDTO.getUuid());
+        }
+        else {
+            throw new UserAlreadyUpdatedException("User already updated");
+        }
+    }
+
     public UserDTO read(UUID uuid) {
         Optional<User> user = dao.findById(uuid);
 
         if(user.isEmpty()) {
+            //другая ошибка должна быть
             throw new IllegalArgumentException();
         }
 
         return this.mapToDTO(user.get());
     }
 
-    public Optional<User> read(String email) {
-        Optional<User> user = dao.findByEmail(email);
-
-        return user;
-    }
 
     public boolean validate(UserDTO dto) {
         if (dto.getUuid() == null) {

@@ -2,7 +2,7 @@ package by.euroholl.userservice.service.dto;
 
 import javax.validation.constraints.*;
 
-public class UserCreateByAdminDTO {
+public class UserByAdminDTO {
     @Email(message = "Mail must be valid")
     private String email;
     @NotBlank(message = "Name cannot be blank")
@@ -10,12 +10,12 @@ public class UserCreateByAdminDTO {
     @NotBlank(message = "Surname cannot be blank")
     private String surname;
     private String password;
-    @NotBlank(message = "Invalid blank")
+    @NotBlank(message = "Role cannot be blank")
     private String role;
-    @NotBlank(message = "Invalid blank")
+    @NotBlank(message = "Status cannot be blank")
     private String status;
 
-    public UserCreateByAdminDTO() {
+    public UserByAdminDTO() {
     }
 
     public String getEmail() {
