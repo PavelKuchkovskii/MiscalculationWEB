@@ -2,6 +2,7 @@ package by.euroholl.userservice.service;
 
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyExistsException;
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyUpdatedException;
+import by.euroholl.userservice.config.exception.api.crud.api.CrudException;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
 import by.euroholl.userservice.dao.entity.builder.UserBuilder;
@@ -87,7 +88,13 @@ public class UserService {
     @Transactional
     public UserDTO update(UUID uuid, LocalDateTime dtUpdate, UserByAdminDTO dto) {
 
-        UserDTO userDTO = read(uuid);
+        UserDTO userDTO;
+
+        try {
+            userDTO = read(uuid);
+        } catch (RuntimeException ex) {
+            throw new CrudException("Invalid uuid");
+        }
 
         if(dtUpdate.isEqual(userDTO.getDtUpdate())) {
             userDTO.setDtUpdate(LocalDateTime.now());
@@ -115,7 +122,7 @@ public class UserService {
 
         if(user.isEmpty()) {
             //другая ошибка должна быть
-            throw new IllegalArgumentException();
+            throw new RuntimeException("Something wrong");
         }
 
         return this.mapToDTO(user.get());

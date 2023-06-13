@@ -3,6 +3,7 @@ package by.euroholl.userservice.config.exception;
 
 import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.config.api.MultipleMessage;
+import by.euroholl.userservice.config.exception.api.crud.api.CrudException;
 import by.euroholl.userservice.config.exception.api.registration.api.RegistrationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAuthException(RuntimeException ex) {
         Message error = new Message("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({CrudException.class})
+    public ResponseEntity<Object> handleCrudException(RuntimeException ex) {
+        Message error = new Message("error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @Override
