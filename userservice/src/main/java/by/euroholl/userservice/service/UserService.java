@@ -2,7 +2,6 @@ package by.euroholl.userservice.service;
 
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyExistsException;
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyUpdatedException;
-import by.euroholl.userservice.config.exception.api.crud.api.CrudException;
 import by.euroholl.userservice.config.utill.Time.TimeUtil;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
@@ -94,7 +93,7 @@ public class UserService {
         try {
             userDTO = read(uuid);
         } catch (RuntimeException ex) {
-            throw new CrudException("Invalid uuid");
+            throw new IllegalArgumentException("Invalid uuid");
         }
 
         if(dtUpdate.isEqual(userDTO.getDtUpdate())) {

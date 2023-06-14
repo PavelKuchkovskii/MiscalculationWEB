@@ -29,7 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({CrudException.class})
+    @ExceptionHandler({CrudException.class, IllegalArgumentException.class})
     public ResponseEntity<Object> handleCrudException(RuntimeException ex) {
         Message error = new Message("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
