@@ -3,6 +3,7 @@ package by.euroholl.userservice.service;
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyExistsException;
 import by.euroholl.userservice.config.exception.api.crud.UserAlreadyUpdatedException;
 import by.euroholl.userservice.config.exception.api.crud.api.CrudException;
+import by.euroholl.userservice.config.utill.Time.TimeUtil;
 import by.euroholl.userservice.dao.api.IUserDao;
 import by.euroholl.userservice.dao.entity.User;
 import by.euroholl.userservice.dao.entity.builder.UserBuilder;
@@ -42,7 +43,7 @@ public class UserService {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUuid(UUID.randomUUID());
-        userDTO.setDtCreate(LocalDateTime.now());
+        userDTO.setDtCreate(TimeUtil.now());
         userDTO.setDtUpdate(userDTO.getDtCreate());
         userDTO.setEmail(dto.getEmail());
         userDTO.setName(dto.getName());
@@ -68,7 +69,7 @@ public class UserService {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUuid(UUID.randomUUID());
-        userDTO.setDtCreate(LocalDateTime.now());
+        userDTO.setDtCreate(TimeUtil.now());
         userDTO.setDtUpdate(userDTO.getDtCreate());
         userDTO.setEmail(dto.getEmail());
         userDTO.setName(dto.getName());
@@ -97,7 +98,7 @@ public class UserService {
         }
 
         if(dtUpdate.isEqual(userDTO.getDtUpdate())) {
-            userDTO.setDtUpdate(LocalDateTime.now());
+            userDTO.setDtUpdate(TimeUtil.now());
             userDTO.setEmail(dto.getEmail());
             userDTO.setName(dto.getName());
             userDTO.setSurname(dto.getSurname());

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @RestController
@@ -35,7 +35,8 @@ public class AdminController {
     public ResponseEntity<UserDTO> doUpdate(@PathVariable("uuid") UUID uuid,
                                             @PathVariable("dt_update") String dt_update,
                                             @Valid @RequestBody UserByAdminDTO dto) {
-        LocalDateTime dtUpdate = LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(dt_update)), ZoneId.of("UTC"));
+
+        LocalDateTime dtUpdate = LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(dt_update)), ZoneOffset.UTC);
 
         UserDTO created = this.service.update(uuid, dtUpdate, dto);
 
