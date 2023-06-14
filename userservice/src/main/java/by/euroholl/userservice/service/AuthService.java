@@ -34,7 +34,7 @@ public class AuthService implements UserDetailsService {
         return new CustomUserDetails(user.getStatus(),
                                     Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())),
                                     user.getPassword(),
-                                    user.getEmail());
+                                    user.getUuid().toString());
 
     }
  }
