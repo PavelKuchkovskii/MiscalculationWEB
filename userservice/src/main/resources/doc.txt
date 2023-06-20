@@ -1,4 +1,8 @@
 Auth controller:
-	/users/login
+	/users/login POST
+	/users/registrtion POST
 UserController
-	/users/registrtion
+	/users/me GET
+AdminController
+	/users POST
+	/users/update POST
