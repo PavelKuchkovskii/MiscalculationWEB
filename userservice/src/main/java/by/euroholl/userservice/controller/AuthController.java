@@ -2,6 +2,8 @@ package by.euroholl.userservice.controller;
 
 import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.security.jwt.JwtTokenUtil;
+import by.euroholl.userservice.service.UserService;
+import by.euroholl.userservice.service.dto.UserCreateDTO;
 import by.euroholl.userservice.service.dto.UserLoginDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,21 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final UserService service;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, UserService service) {
         this.authenticationManager = authenticationManager;
+        this.service = service;
+    }
+
+    @PostMapping("/registration")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Message> doPost(@Valid @RequestBody UserCreateDTO dto) {
+
+        service.create(dto);
+
+        Message message = new Message("info", "To complete registration, please follow the link sent to your email");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -43,16 +57,5 @@ public class AuthController {
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
-
-    @GetMapping("/row")
-    public ResponseEntity<Message> doGet() {
-
-        Message message = new Message("info", "тут");
-
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
-
-
-
 
 }

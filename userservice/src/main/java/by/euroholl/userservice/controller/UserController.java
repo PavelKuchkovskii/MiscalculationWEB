@@ -1,13 +1,13 @@
 package by.euroholl.userservice.controller;
 
-import by.euroholl.userservice.config.api.Message;
 import by.euroholl.userservice.service.UserService;
-import by.euroholl.userservice.service.dto.UserCreateDTO;
+import by.euroholl.userservice.service.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -20,11 +20,13 @@ public class UserController {
         this.service = service;
     }
 
-   /* @GetMapping("/me")
+    @GetMapping("/me")
     public ResponseEntity<UserDTO> doGet() {
-        UserDTO user = this.service.get(SecurityContextHolder.getContext().getAuthentication());
+
+        UUID uuid = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName());
+        UserDTO user = this.service.read(uuid);
         return new ResponseEntity<>(user, HttpStatus.OK);
-    }*/
+    }
 
     /*@GetMapping("/registration/confirm/{token}")
     public ResponseEntity<RegistrationMessage> doConfirm(@PathVariable("token") String token) {
@@ -36,14 +38,6 @@ public class UserController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }*/
 
-    @PostMapping("/registration")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<Message> doPost(@Valid @RequestBody UserCreateDTO dto) {
 
-        service.create(dto);
-
-        Message message = new Message("info", "To complete registration, please follow the link sent to your email");
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
 
 }
